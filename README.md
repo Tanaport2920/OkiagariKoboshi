@@ -25,38 +25,6 @@
 
 ---
 
-## 2. 現在の到達点
-
-```text
-Isaac Lab側:
-  - URDF / USD読み込み成功
-  - collision動作確認済み
-  - WebRTC表示成功
-  - revolute1 / revolute2の駆動確認済み
-  - サイン波による関節駆動確認済み
-  - 4姿勢referenceで起き上がり成功
-
-Referenceで成功済みの姿勢:
-  - roll_pos
-  - roll_neg
-  - pitch_pos
-  - pitch_neg
-
-次のシミュレーション側タスク:
-  - reference自動選択
-  - policyをdelta action方式へ戻す
-  - reference追従報酬でPPO学習
-  - policy単独で起き上がるか確認
-
-次の実機側タスク:
-  - PlatformIOプロジェクト作成
-  - ATOM Matrix + STS3032通信確認
-  - M5上でreference軌道再生
-  - policy_weights.hを組み込み
-```
-
----
-
 ## 3. 使用環境
 
 ### 3.1 シミュレーション環境
