@@ -2,6 +2,10 @@
 
 2自由度サーボを持つ起き上がり小法師型ロボットを、Isaac Lab上でシミュレーション・強化学習し、最終的にM5Stack ATOM Matrixへ制御ポリシーを組み込むための開発メモです。
 
+<img width="426" height="240" alt="Real" src="https://github.com/user-attachments/assets/37ba31c5-4610-44a3-ad65-1112a04a87e7" />
+
+<img width="426" height="240" alt="Simulation" src="https://github.com/user-attachments/assets/bc8d1295-2b47-4e73-8e47-dc103e4759b9" />
+
 ---
 
 ## 1. 目的
