@@ -90,17 +90,16 @@ class OkiagariGetupEnvCfg(DirectRLEnvCfg):
 
     # Reset settings.  Keep the four reference basins, but vary the drop pose
     # enough to train recovery from realistic off-axis orientations.
-    init_root_height = 0.35
-    init_height_noise = 0.10
+    init_root_height = 0.20
+    init_height_noise = 0.08
     init_roll_noise = 0.25
     init_pitch_noise = 0.20
     init_yaw_noise = math.pi
     init_joint_noise = 0.15
 
-    # Let the robot finish falling onto the ground before the reference/policy
-    # starts moving the servos.  With init_root_height=0.35..0.45 m, free fall is
-    # roughly 0.27..0.30 s; the extra margin lets contact settle a little.
-    control_start_delay_s = 0.50
+    # Keep servos still while the robot is dropped and settles on the ground.
+    # The get-up reference and policy phase start after this delay.
+    drop_settle_time_s = 0.35
 
     # Reward weights.
     rew_alive = 0.05
@@ -114,13 +113,20 @@ class OkiagariGetupEnvCfg(DirectRLEnvCfg):
     rew_reference = 4.0
     # Command imitation must dominate the tempting half-upright local optimum.
     rew_command_reference = 16.0
+    # Once the body is nearly upright, the servos should return to the straight
+    # standing posture instead of keeping one axis folded at its limit.
+    rew_stand_joint_neutral = 16.0
+    rew_stand_command_neutral = 20.0
     reference_error_scale = 0.5
     command_error_scale = 2.0
+    stand_neutral_error_scale = 3.0
 
     # Policy actions are absolute normalized servo targets.  This is easier to
     # learn and matches what the real servo controller ultimately consumes.
     joint1_limit = 1.57
     joint2_limit = 2.09
+    stand_joint_success_limit = 0.35
+    stand_command_success_limit = 0.35
 
     # Servo specification: 60 degrees in 0.09 seconds.
     servo_speed_limit = math.radians(60.0) / 0.09
@@ -201,11 +207,10 @@ class OkiagariGetupEnv(DirectRLEnv):
         return self.episode_length_buf.float() * self.cfg.sim.dt * self.cfg.decimation
 
     def _get_task_time(self) -> torch.Tensor:
-        """Time seen by the get-up reference after the post-drop settle delay."""
-        return torch.clamp(self._get_episode_time() - self.cfg.control_start_delay_s, min=0.0)
+        return torch.clamp(self._get_episode_time() - self.cfg.drop_settle_time_s, min=0.0)
 
     def _control_active(self) -> torch.Tensor:
-        return self._get_episode_time() >= self.cfg.control_start_delay_s
+        return self._get_episode_time() >= self.cfg.drop_settle_time_s
 
     def _get_reference_target(self) -> torch.Tensor:
         """Return the interpolated teacher joint target for every environment."""
@@ -243,10 +248,13 @@ class OkiagariGetupEnv(DirectRLEnv):
             self._desired_targets[:, 0] = self._actions[:, 0] * self.cfg.joint1_limit
             self._desired_targets[:, 1] = self._actions[:, 1] * self.cfg.joint2_limit
 
-        # During the post-reset drop/settle window, do not let either the policy
-        # or the scripted reference change the posture in mid-air.
+        # Do not move the servos while the robot is still falling/settling.
         active = self._control_active().unsqueeze(-1)
-        self._desired_targets[:] = torch.where(active, self._desired_targets, torch.zeros_like(self._desired_targets))
+        self._desired_targets[:] = torch.where(
+            active,
+            self._desired_targets,
+            torch.zeros_like(self._desired_targets),
+        )
 
         # Apply the real-servo slew-rate limit at every physics step.  At 200 Hz
         # this is about 0.058 rad/step, or 0.233 rad per 50 Hz policy step.
@@ -283,7 +291,7 @@ class OkiagariGetupEnv(DirectRLEnv):
         joint_pos = self.robot.data.joint_pos[:, self._joint_ids]
         joint_vel = self.robot.data.joint_vel[:, self._joint_ids]
         task_time = self._get_task_time()
-        task_length_s = max(self.cfg.episode_length_s - self.cfg.control_start_delay_s, 1.0e-6)
+        task_length_s = max(self.cfg.episode_length_s - self.cfg.drop_settle_time_s, 1.0e-6)
         episode_phase = torch.clamp(task_time / task_length_s, 0.0, 1.0).unsqueeze(-1)
 
         obs = torch.cat(
@@ -347,9 +355,32 @@ class OkiagariGetupEnv(DirectRLEnv):
         upright_score = torch.clamp(upright_raw, 0.0, 1.0)
         upright_reward = 12.0 * upright_score**2 * active.float()
 
+        joint_neutral_error = (
+            (joint_pos[:, 0] / self.cfg.joint1_limit) ** 2
+            + (joint_pos[:, 1] / self.cfg.joint2_limit) ** 2
+        )
+        command_neutral_error = (
+            (self._desired_targets[:, 0] / self.cfg.joint1_limit) ** 2
+            + (self._desired_targets[:, 1] / self.cfg.joint2_limit) ** 2
+        )
+        stand_gate = torch.clamp((upright_score - 0.85) / 0.10, 0.0, 1.0) * active.float()
+        stand_joint_neutral_reward = self.cfg.rew_stand_joint_neutral * stand_gate * (
+            torch.exp(-self.cfg.stand_neutral_error_scale * joint_neutral_error) - 1.0
+        )
+        stand_command_neutral_reward = self.cfg.rew_stand_command_neutral * stand_gate * (
+            torch.exp(-self.cfg.stand_neutral_error_scale * command_neutral_error) - 1.0
+        )
+
+        joint_near_neutral = torch.all(torch.abs(joint_pos) < self.cfg.stand_joint_success_limit, dim=1)
+        command_near_neutral = torch.all(
+            torch.abs(self._desired_targets) < self.cfg.stand_command_success_limit,
+            dim=1,
+        )
+
         # Root height cannot be used here: a visually successful standing pose
-        # has a root height around 0.013 m in this model.
-        success = (upright_score > 0.95) & active
+        # has a root height around 0.013 m in this model.  Success requires both
+        # the body and the servos to be in the final straight standing posture.
+        success = (upright_score > 0.95) & joint_near_neutral & command_near_neutral & active
 
         success_reward = 40.0 * success.float()
 
@@ -388,6 +419,8 @@ class OkiagariGetupEnv(DirectRLEnv):
             reference_reward
             + command_reference_reward
             + upright_reward
+            + stand_joint_neutral_reward
+            + stand_command_neutral_reward
             + success_reward
             + ang_vel_penalty
             + joint_vel_penalty
@@ -410,6 +443,8 @@ class OkiagariGetupEnv(DirectRLEnv):
                 "ref_reward=", float(reference_reward[0].detach().cpu()),
                 "cmd_error=", float(command_error[0].detach().cpu()),
                 "cmd_reward=", float(command_reference_reward[0].detach().cpu()),
+                "stand_joint_err=", float(joint_neutral_error[0].detach().cpu()),
+                "stand_cmd_err=", float(command_neutral_error[0].detach().cpu()),
                 "joint_pos=", self.robot.data.joint_pos[0, self._joint_ids].detach().cpu().numpy(),
             )
 
@@ -433,12 +468,11 @@ class OkiagariGetupEnv(DirectRLEnv):
 
         n = len(env_ids)
         device = self.device
-        env_ids_tensor = torch.as_tensor(env_ids, device=device)
 
         # Randomize equally across the four teacher-reference start poses.
         root_state = self.robot.data.default_root_state[env_ids].clone()
-        root_state[:, 0:2] = self.scene.env_origins[env_ids, 0:2]
-        root_state[:, 2] = self.scene.env_origins[env_ids, 2] + self.cfg.init_root_height + sample_uniform(
+        root_state[:, 0:3] = self.scene.env_origins[env_ids]
+        root_state[:, 2] += self.cfg.init_root_height + sample_uniform(
             0.0, self.cfg.init_height_noise, (n,), device
         )
 
@@ -486,18 +520,6 @@ class OkiagariGetupEnv(DirectRLEnv):
         self.robot.write_root_pose_to_sim(root_state[:, :7], env_ids)
         self.robot.write_root_velocity_to_sim(root_state[:, 7:], env_ids)
         self.robot.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
-
-        env0_matches = torch.nonzero(env_ids_tensor == 0, as_tuple=False)
-        if env0_matches.numel() > 0:
-            env0_local = int(env0_matches[0, 0].detach().cpu())
-            print(
-                "reset debug env0:",
-                "mode=", int(mode_ids[env0_local].detach().cpu()),
-                "root_z=", float(root_state[env0_local, 2].detach().cpu()),
-                "roll=", float(roll[env0_local].detach().cpu()),
-                "pitch=", float(pitch[env0_local].detach().cpu()),
-                "yaw=", float(yaw[env0_local].detach().cpu()),
-            )
 
         self.actions[env_ids] = 0.0
         self.prev_actions[env_ids] = 0.0
