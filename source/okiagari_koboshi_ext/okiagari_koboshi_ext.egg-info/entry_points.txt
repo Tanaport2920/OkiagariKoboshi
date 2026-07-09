@@ -1,0 +1,2 @@
+[gymnasium.envs]
+okiagari_koboshi_ext = okiagari_koboshi_ext

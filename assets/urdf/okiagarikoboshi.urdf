@@ -1,0 +1,258 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="okiagarikoboshi">
+    <link name="arm1">
+        <inertial>
+            <mass value="0.00677043" />
+            <origin xyz="-0.0198303 -0.00332605 0.0238007" rpy="0 -0 0" />
+            <inertia ixx="2.07565e-06" ixy="1.08167e-08" ixz="-7.74025e-08" iyy="3.02058e-06" iyz="3.48005e-07" izz="1.70256e-06" />
+        </inertial>
+        <visual>
+            <origin xyz="-0.0417 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/Arm1.stl" scale="1 1 1" />
+            </geometry>
+            <material name="0.749020_0.749020_0.749020_0.000000_0.000000">
+                <color rgba="0.74902 0.74902 0.74902 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-0.0417 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/Arm1.stl" scale="1 1 1" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="arm2">
+        <inertial>
+            <mass value="0.0168831" />
+            <origin xyz="-0.0194738 -5.21533e-20 0.060118" rpy="0 -0 0" />
+            <inertia ixx="1.93744e-05" ixy="0" ixz="-1.25685e-07" iyy="1.99906e-05" iyz="0" izz="1.52095e-06" />
+        </inertial>
+        <visual>
+            <origin xyz="-0.0417 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/Arm2.stl" scale="1 1 1" />
+            </geometry>
+            <material name="0.749020_0.749020_0.749020_0.000000_0.000000">
+                <color rgba="0.74902 0.74902 0.74902 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-0.0417 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/Arm2.stl" scale="1 1 1" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="base">
+        <inertial>
+            <mass value="0.034032" />
+            <origin xyz="-0.00134323 3.38874e-18 0.0150396" rpy="0 -0 0" />
+            <inertia ixx="1.38078e-05" ixy="0" ixz="1.09302e-06" iyy="2.2856e-05" iyz="0" izz="2.33478e-05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/Base.stl" scale="1 1 1" />
+            </geometry>
+            <material name="0.749020_0.749020_0.749020_0.000000_0.000000">
+                <color rgba="0.74902 0.74902 0.74902 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/Base.stl" scale="1 1 1" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="battery">
+        <inertial>
+            <mass value="0.0095618" />
+            <origin xyz="0 0.009 0.0075" rpy="0 -0 0" />
+            <inertia ixx="4.09189e-07" ixy="0" ixz="0" iyy="8.49117e-07" iyz="0" izz="9.23194e-07" />
+        </inertial>
+        <visual>
+            <origin xyz="-0.015 0 -1.73472e-18" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/Battery.stl" scale="1 1 1" />
+            </geometry>
+            <material name="0.749020_0.749020_0.749020_0.000000_0.000000">
+                <color rgba="0.74902 0.74902 0.74902 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-0.015 0 -1.73472e-18" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/Battery.stl" scale="1 1 1" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="m5atom">
+        <inertial>
+            <mass value="0.0092951" />
+            <origin xyz="1.34715e-18 0 0.0066192" rpy="0 -0 0" />
+            <inertia ixx="5.70776e-07" ixy="0" ixz="0" iyy="5.70776e-07" iyz="0" izz="8.68924e-07" />
+        </inertial>
+        <visual>
+            <origin xyz="1.69477e-18 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/M5Atom.stl" scale="1 1 1" />
+            </geometry>
+            <material name="0.749020_0.749020_0.749020_0.000000_0.000000">
+                <color rgba="0.74902 0.74902 0.74902 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="1.69477e-18 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/M5Atom.stl" scale="1 1 1" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="root" />
+    <link name="sts3032">
+        <inertial>
+            <mass value="0.0212025" />
+            <origin xyz="9.60267e-05 0.006 0.0141274" rpy="0 -0 0" />
+            <inertia ixx="1.641e-06" ixy="0" ixz="-3.00227e-08" iyy="2.37395e-06" iyz="0" izz="1.23566e-06" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0.006 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/STS3032.stl" scale="1 1 1" />
+            </geometry>
+            <material name="0.749020_0.749020_0.749020_0.000000_0.000000">
+                <color rgba="0.74902 0.74902 0.74902 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0.006 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/STS3032.stl" scale="1 1 1" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="sts3032_1">
+        <inertial>
+            <mass value="0.0212025" />
+            <origin xyz="9.60267e-05 -0.006 0.0141274" rpy="0 -0 0" />
+            <inertia ixx="1.641e-06" ixy="0" ixz="-3.00227e-08" iyy="2.37395e-06" iyz="0" izz="1.23566e-06" />
+        </inertial>
+        <visual>
+            <origin xyz="0 -0.006 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/STS3032.stl" scale="1 1 1" />
+            </geometry>
+            <material name="0.749020_0.749020_0.749020_0.000000_0.000000">
+                <color rgba="0.74902 0.74902 0.74902 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 -0.006 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/STS3032.stl" scale="1 1 1" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="sts3032_horn">
+        <inertial>
+            <mass value="0.00140165" />
+            <origin xyz="2.67641e-19 9.02511e-20 4.20229e-05" rpy="0 -0 0" />
+            <inertia ixx="2.81491e-08" ixy="0" ixz="0" iyy="2.81491e-08" iyz="0" izz="5.38819e-08" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 -0.0012" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/STS3032_Horn.stl" scale="1 1 1" />
+            </geometry>
+            <material name="0.749020_0.749020_0.749020_0.000000_0.000000">
+                <color rgba="0.74902 0.74902 0.74902 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 -0.0012" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/STS3032_Horn.stl" scale="1 1 1" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="sts3032_horn_1">
+        <inertial>
+            <mass value="0.00140165" />
+            <origin xyz="2.67641e-19 9.02511e-20 4.20229e-05" rpy="0 -0 0" />
+            <inertia ixx="2.81491e-08" ixy="0" ixz="0" iyy="2.81491e-08" iyz="0" izz="5.38819e-08" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 -0.0012" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/STS3032_Horn.stl" scale="1 1 1" />
+            </geometry>
+            <material name="0.749020_0.749020_0.749020_0.000000_0.000000">
+                <color rgba="0.74902 0.74902 0.74902 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 -0.0012" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://assets/meshes/STS3032_Horn.stl" scale="1 1 1" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="fix1" type="fixed">
+        <origin xyz="-0.01375 -0.006 0.04" rpy="0 -1.5708 3.14159" />
+        <axis xyz="0 1 0" />
+        <parent link="base" />
+        <child link="sts3032_1" />
+    </joint>
+    <joint name="fix2" type="fixed">
+        <origin xyz="4.33681e-19 0 -0.0012" rpy="0 1.5708 4.71239" />
+        <axis xyz="-1 -0 -0" />
+        <parent link="sts3032_horn_1" />
+        <child link="arm1" />
+    </joint>
+    <joint name="fix3" type="fixed">
+        <origin xyz="-0.02535 -0.01375 0.041" rpy="0 -1.5708 -1.5708" />
+        <axis xyz="0 -1 0" />
+        <parent link="arm1" />
+        <child link="sts3032" />
+    </joint>
+    <joint name="fix4" type="fixed">
+        <origin xyz="1.38778e-17 -1.51788e-17 -0.0012" rpy="0 1.5708 -4.24713e-15" />
+        <axis xyz="-1 -0 -0" />
+        <parent link="sts3032_horn" />
+        <child link="arm2" />
+    </joint>
+    <joint name="fix5" type="fixed">
+        <origin xyz="0.0295 0 0.002" rpy="0 -0 1.5708" />
+        <axis xyz="-1 -2.22045e-16 -0" />
+        <parent link="base" />
+        <child link="battery" />
+    </joint>
+    <joint name="fix6" type="fixed">
+        <origin xyz="-0.002 0.02 0.002" rpy="0 -0 0" />
+        <axis xyz="0 0 -1" />
+        <parent link="base" />
+        <child link="m5atom" />
+    </joint>
+    <joint name="fixed_node_to_root_joint" type="fixed">
+        <origin xyz="0.00169854 -0.00260265 -0.00443611" rpy="0 -0 0" />
+        <axis xyz="0 0 1" />
+        <parent link="root" />
+        <child link="base" />
+    </joint>
+    <joint name="revolute1" type="revolute">
+        <origin xyz="0.00579 -0.006 0.0319" rpy="3.14159 -4.44089e-16 -1.5708" />
+        <axis xyz="0 0 -1" />
+        <parent link="sts3032_1" />
+        <child link="sts3032_horn_1" />
+        <limit effort="1" velocity="1" lower="-1.5708" upper="1.5708" />
+    </joint>
+    <joint name="revolute2" type="revolute">
+        <origin xyz="0.00579 0.006 0.0319" rpy="-3.14159 2.25509e-15 6.9571e-16" />
+        <axis xyz="0 0 -1" />
+        <parent link="sts3032" />
+        <child link="sts3032_horn" />
+        <limit effort="1" velocity="1" lower="-2.0944" upper="2.0944" />
+    </joint>
+</robot>

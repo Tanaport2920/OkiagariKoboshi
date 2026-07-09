@@ -1,0 +1,25 @@
+services:
+  isaaclab:
+    image: nvcr.io/nvidia/isaac-lab:2.3.2
+    container_name: okiagari_isaaclab
+    runtime: nvidia
+    network_mode: host
+    stdin_open: true
+    tty: true
+    ports:
+      - "49100:49100/tcp"
+      - "47998:47998/udp"
+    environment:
+      - ACCEPT_EULA=Y
+      - PRIVACY_CONSENT=Y
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - /home/ishii-lab-server01/OkiagariKoboshi_ws:/workspace/OkiagariKoboshi_ws:rw
+      - /home/ishii-lab-server01/OkiagariKoboshi_ws/isaac-cache/kit:/isaac-sim/kit/cache:rw
+      - /home/ishii-lab-server01/OkiagariKoboshi_ws/isaac-cache/ov:/root/.cache/ov:rw
+      - /home/ishii-lab-server01/OkiagariKoboshi_ws/isaac-cache/pip:/root/.cache/pip:rw
+      - /home/ishii-lab-server01/OkiagariKoboshi_ws/isaac-cache/glcache:/root/.cache/nvidia/GLCache:rw
+      - /home/ishii-lab-server01/OkiagariKoboshi_ws/isaac-cache/computecache:/root/.nv/ComputeCache:rw
+    working_dir: /workspace/OkiagariKoboshi_ws
+    entrypoint: /bin/bash

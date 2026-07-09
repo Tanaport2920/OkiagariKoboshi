@@ -1,0 +1,20 @@
+# Isaac Sim / generated caches
+isaac-cache/
+logs/
+outputs/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store

@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: okiagari-koboshi-ext
+Version: 0.1.0
+Summary: Isaac Lab task extension for Okiagari Koboshi robot
+Requires-Python: >=3.10
